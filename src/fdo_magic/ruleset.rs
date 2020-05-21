@@ -114,9 +114,5 @@ pub fn from_filepath(filepath: &str) -> Result<FnvHashMap<MIME, DiGraph<super::M
 	let mut bmagic = Vec::<u8>::new();
 	rmagic.read_to_end(&mut bmagic).map_err(|e| e.to_string())?;
 	
-	let magic_ruleset = from_u8(
-		bmagic.as_slice()
-	).map_err(|e| e.to_string())?;
-	
-	Ok(magic_ruleset)
+	from_u8(bmagic.as_slice())
 }
