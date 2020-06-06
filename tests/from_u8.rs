@@ -3,7 +3,9 @@ mod from_u8 {
     extern crate tree_magic;
 
     macro_rules! convmime {
-        ($x:expr) => {$x.to_string()}
+        ($x:expr) => {
+            $x.to_string()
+        };
     }
 
     ///Image tests
@@ -22,7 +24,7 @@ mod from_u8 {
         );
     }
     #[test]
-	// GNU file reports image/x-ms-bmp
+    // GNU file reports image/x-ms-bmp
     fn image_bmp() {
         assert_eq!(
             tree_magic::from_u8(include_bytes!("image/bmp")),
@@ -58,7 +60,6 @@ mod from_u8 {
         );
     }
 
-
     /// Archive tests
     #[test]
     fn application_tar() {
@@ -91,21 +92,20 @@ mod from_u8 {
         );
     }
 
-	// Audio tests
-	#[test]
-	fn audio_flac() {
-		assert_eq!(
+    // Audio tests
+    #[test]
+    fn audio_flac() {
+        assert_eq!(
             tree_magic::from_u8(include_bytes!("audio/flac")),
             convmime!("audio/flac")
         );
-	}
-	
-	#[test]
-	fn audio_mpeg() {
-		assert_eq!(
+    }
+
+    #[test]
+    fn audio_mpeg() {
+        assert_eq!(
             tree_magic::from_u8(include_bytes!("audio/mpeg")),
             convmime!("audio/mpeg")
         );
-	}
-	
+    }
 }

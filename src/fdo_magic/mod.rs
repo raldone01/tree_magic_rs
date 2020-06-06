@@ -9,8 +9,8 @@ pub struct MagicRule {
     pub val: Vec<u8>,
     pub mask: Option<Vec<u8>>,
     pub word_len: u32,
-    pub region_len: u32
+    pub region_len: u32,
 }
 
-pub mod ruleset;
 pub mod check;
+pub mod ruleset;
