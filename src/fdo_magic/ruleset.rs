@@ -89,10 +89,7 @@ fn gen_graph(magic_rules: Vec<super::MagicRule>) -> DiGraph<super::MagicRule, u3
 			};
 		}
 		rulestack.push( (x, xnode) );
-		
 	}
-	
-	let graph = graph;
 	graph
 }
 
