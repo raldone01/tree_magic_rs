@@ -7,7 +7,7 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
 		rule.start_off as usize;
 	let bound_max =
 			rule.start_off as usize +
-			rule.val_len as usize +
+			rule.val.len() +
 			rule.region_len as usize;
 
 	if (file.len()) < bound_max {
@@ -59,7 +59,7 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
 		
 		// Search down until we find a hit
 		let mut y = Vec::<u8>::with_capacity(testarea.len());
-		for x in testarea.windows(rule.val_len as usize) {
+		for x in testarea.windows(rule.val.len()) {
 
 			y.clear();
 			
@@ -68,8 +68,8 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
 			match *rule_mask {
 				Some(ref mask) => {
 
-					for i in 0..rule.val_len {
-						y.push(x[i as usize] & mask[i as usize]);
+					for i in 0..rule.val.len() {
+						y.push(x[i] & mask[i]);
 					}
 				},
 				None => y = x.to_vec(),

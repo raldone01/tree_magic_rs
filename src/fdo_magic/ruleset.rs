@@ -39,7 +39,6 @@ fn magic_rules(input: &[u8]) -> IResult<&[u8], super::MagicRule> {
         indent_level,
         start_off,
         val: val.to_vec(),
-        val_len,
         mask: mask.map(Vec::from),
         word_len: word_len.unwrap_or(1),
         region_len: region_len.unwrap_or(0),

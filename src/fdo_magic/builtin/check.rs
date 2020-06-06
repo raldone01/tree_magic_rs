@@ -38,7 +38,7 @@ pub fn from_filepath(filepath: &Path, mimetype: &str) -> bool{
 		let ref y = x.weight;
 		let tmplen = 
 			y.start_off as usize +
-			y.val_len as usize +
+			y.val.len() +
 			y.region_len as usize;
 			
 		if tmplen > scanlen {
