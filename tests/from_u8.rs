@@ -1,6 +1,6 @@
 mod from_u8 {
 
-    extern crate tree_magic;
+    use tree_magic;
 
     macro_rules! convmime {
         ($x:expr) => {

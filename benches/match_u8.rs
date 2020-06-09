@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate bencher;
-extern crate tree_magic;
 use bencher::Bencher;
 
 ///Image benchmarks

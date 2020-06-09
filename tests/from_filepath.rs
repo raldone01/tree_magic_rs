@@ -1,7 +1,4 @@
 mod from_filepath {
-
-    extern crate tree_magic;
-
     use std::path::Path;
 
     #[test]

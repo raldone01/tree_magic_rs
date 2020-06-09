@@ -3,6 +3,7 @@
 use super::MagicRule;
 use crate::MIME;
 use fnv::FnvHashMap;
+use lazy_static::lazy_static;
 use petgraph::prelude::*;
 
 /// Preload alias list

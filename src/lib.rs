@@ -21,8 +21,6 @@
 //!
 //! # Example
 //! ```rust
-//! extern crate tree_magic;
-//!
 //! // Load a GIF file
 //! let input: &[u8] = include_bytes!("../tests/image/gif");
 //!
@@ -36,12 +34,10 @@
 //! ```
 
 #![allow(unused_doc_comments)]
-#![allow(dead_code)]
-#[macro_use]
-extern crate lazy_static;
 
 use fnv::FnvHashMap;
 use fnv::FnvHashSet;
+use lazy_static::lazy_static;
 use petgraph::prelude::*;
 use std::path::Path;
 

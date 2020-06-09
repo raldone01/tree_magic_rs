@@ -1,5 +1,5 @@
 mod match_u8 {
-    extern crate tree_magic;
+    use tree_magic;
 
     ///Image tests
     #[test]
