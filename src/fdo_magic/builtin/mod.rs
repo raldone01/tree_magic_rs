@@ -13,7 +13,7 @@ lazy_static! {
 
 /// Load magic file before anything else.
 lazy_static! {
-    static ref ALLRULES: FnvHashMap<MIME, DiGraph<MagicRule, u32>> =
+    static ref ALLRULES: FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> =
         super::ruleset::from_u8(include_bytes!("magic")).unwrap_or(FnvHashMap::default());
 }
 

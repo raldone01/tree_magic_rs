@@ -1,4 +1,6 @@
 use crate::MIME;
+use super::MagicRule;
+
 use fnv::FnvHashMap;
 use nom::{
     bytes::complete::{is_not, tag, take, take_while},
@@ -13,7 +15,7 @@ use petgraph::prelude::*;
 use std::str;
 
 // Singular magic ruleset
-fn magic_rules(input: &[u8]) -> IResult<&[u8], super::MagicRule> {
+fn magic_rules(input: &[u8]) -> IResult<&[u8], MagicRule<'_>> {
     let int_or = |default| {
         map(take_while(is_digit), move |digits| {
             str::from_utf8(digits).unwrap().parse().unwrap_or(default)
@@ -38,11 +40,11 @@ fn magic_rules(input: &[u8]) -> IResult<&[u8], super::MagicRule> {
 
     Ok((
         input,
-        super::MagicRule {
+        MagicRule {
             indent_level,
             start_off,
-            val: val.to_vec(),
-            mask: mask.map(Vec::from),
+            val,
+            mask,
             word_len: word_len.unwrap_or(1),
             region_len: region_len.unwrap_or(0),
         },
@@ -51,7 +53,7 @@ fn magic_rules(input: &[u8]) -> IResult<&[u8], super::MagicRule> {
 
 /// Converts a magic file given as a &[u8] array
 /// to a vector of MagicEntry structs
-fn ruleset(input: &[u8]) -> IResult<&[u8], Vec<(MIME, Vec<super::MagicRule>)>> {
+fn ruleset(input: &[u8]) -> IResult<&[u8], Vec<(MIME, Vec<MagicRule<'_>>)>> {
     // Parse the MIME type from "[priority: mime]"
     let mime = map(
         map_res(
@@ -72,11 +74,11 @@ fn ruleset(input: &[u8]) -> IResult<&[u8], Vec<(MIME, Vec<super::MagicRule>)>> {
     preceded(tag("MIME-Magic\0\n"), many0(magic_entry))(input)
 }
 
-fn gen_graph(magic_rules: Vec<super::MagicRule>) -> DiGraph<super::MagicRule, u32> {
+fn gen_graph(magic_rules: Vec<MagicRule<'_>>) -> DiGraph<MagicRule<'_>, u32> {
     use petgraph::prelude::*;
     // Whip up a graph real quick
-    let mut graph = DiGraph::<super::MagicRule, u32>::new();
-    let mut rulestack = Vec::<(super::MagicRule, NodeIndex)>::new();
+    let mut graph = DiGraph::<MagicRule, u32>::new();
+    let mut rulestack = Vec::<(MagicRule, NodeIndex)>::new();
 
     for x in magic_rules {
         let xnode = graph.add_node(x.clone());
@@ -101,7 +103,7 @@ fn gen_graph(magic_rules: Vec<super::MagicRule>) -> DiGraph<super::MagicRule, u3
     graph
 }
 
-pub fn from_u8(b: &[u8]) -> Result<FnvHashMap<MIME, DiGraph<super::MagicRule, u32>>, String> {
+pub fn from_u8(b: &[u8]) -> Result<FnvHashMap<MIME, DiGraph<MagicRule<'_>, u32>>, String> {
     let tuplevec = ruleset(b).map_err(|e| e.to_string())?.1;
     let res = tuplevec
         .into_iter()
