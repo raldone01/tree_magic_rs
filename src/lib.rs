@@ -138,27 +138,6 @@ lazy_static! {
     };
 }
 
-/// Convert a &str to a MIME
-macro_rules! convmime {
-    ($x:expr) => {
-        $x
-    };
-}
-
-/// Convert a MIME to a &str
-macro_rules! unconvmime {
-    ($x:expr) => {
-        $x
-    };
-}
-
-/// Clone a MIME
-macro_rules! clonemime {
-    ($x:expr) => {
-        $x
-    };
-}
-
 // Initialize filetype graph
 fn graph_init() -> Result<TypeStruct, std::io::Error> {
     let mut graph = DiGraph::<MIME, u32>::new();
@@ -177,8 +156,8 @@ fn graph_init() -> Result<TypeStruct, std::io::Error> {
 
     // Create all nodes
     for mimetype in mimelist.iter() {
-        let node = graph.add_node(clonemime!(mimetype));
-        added_mimes.insert(clonemime!(mimetype), node);
+        let node = graph.add_node(mimetype);
+        added_mimes.insert(mimetype, node);
     }
 
     let mut edge_list = FnvHashSet::<(NodeIndex, NodeIndex)>::with_capacity_and_hasher(
@@ -214,32 +193,32 @@ fn graph_init() -> Result<TypeStruct, std::io::Error> {
     let node_text = match added_mimes_tmp.get("text/plain") {
         Some(x) => *x,
         None => {
-            let node = graph.add_node(convmime!("text/plain"));
-            added_mimes.insert(convmime!("text/plain"), node);
+            let node = graph.add_node("text/plain");
+            added_mimes.insert("text/plain", node);
             node
         }
     };
     let node_octet = match added_mimes_tmp.get("application/octet-stream") {
         Some(x) => *x,
         None => {
-            let node = graph.add_node(convmime!("application/octet-stream"));
-            added_mimes.insert(convmime!("application/octet-stream"), node);
+            let node = graph.add_node("application/octet-stream");
+            added_mimes.insert("application/octet-stream", node);
             node
         }
     };
     let node_allall = match added_mimes_tmp.get("all/all") {
         Some(x) => *x,
         None => {
-            let node = graph.add_node(convmime!("all/all"));
-            added_mimes.insert(convmime!("all/all"), node);
+            let node = graph.add_node("all/all");
+            added_mimes.insert("all/all", node);
             node
         }
     };
     let node_allfiles = match added_mimes_tmp.get("all/allfiles") {
         Some(x) => *x,
         None => {
-            let node = graph.add_node(convmime!("all/allfiles"));
-            added_mimes.insert(convmime!("all/allfiles"), node);
+            let node = graph.add_node("all/allfiles");
+            added_mimes.insert("all/allfiles", node);
             node
         }
     };
@@ -306,7 +285,7 @@ fn typegraph_walker<T: Clone>(
         match result {
             true => match typegraph_walker(childnode, input, matchfn) {
                 Some(foundtype) => return Some(foundtype),
-                None => return Some(clonemime!(mimetype)),
+                None => return Some(mimetype),
             },
             false => continue,
         }
@@ -348,10 +327,7 @@ fn match_u8_noalias(mimetype: &str, bytes: &[u8]) -> bool {
 /// assert_eq!(result, true);
 /// ```
 pub fn match_u8(mimetype: MIME, bytes: &[u8]) -> bool {
-    // Transform alias if needed
-    let oldmime = convmime!(mimetype);
-    let x = unconvmime!(get_alias(&oldmime));
-    match_u8_noalias(x, bytes)
+    match_u8_noalias(get_alias(mimetype), bytes)
 }
 
 /// Gets the type of a file from a raw bytestream, starting at a certain node
