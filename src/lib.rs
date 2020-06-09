@@ -44,7 +44,7 @@ use std::path::Path;
 mod basetype;
 mod fdo_magic;
 
-type MIME = String;
+type MIME = &'static str;
 
 /// Check these types first
 /// TODO: Poll these from the checkers? Feels a bit arbitrary
@@ -141,21 +141,21 @@ lazy_static! {
 /// Convert a &str to a MIME
 macro_rules! convmime {
     ($x:expr) => {
-        $x.to_string()
+        $x
     };
 }
 
 /// Convert a MIME to a &str
 macro_rules! unconvmime {
     ($x:expr) => {
-        $x.as_str()
+        $x
     };
 }
 
 /// Clone a MIME
 macro_rules! clonemime {
     ($x:expr) => {
-        $x.clone()
+        $x
     };
 }
 
@@ -316,7 +316,7 @@ fn typegraph_walker<T: Clone>(
 }
 
 /// Transforms an alias into it's real type
-fn get_alias(mimetype: &String) -> &String {
+fn get_alias(mimetype: MIME) -> MIME {
     match ALIASES.get(mimetype) {
         Some(x) => x,
         None => mimetype,
@@ -347,7 +347,7 @@ fn match_u8_noalias(mimetype: &str, bytes: &[u8]) -> bool {
 /// let result = tree_magic::match_u8("image/gif", input);
 /// assert_eq!(result, true);
 /// ```
-pub fn match_u8(mimetype: &str, bytes: &[u8]) -> bool {
+pub fn match_u8(mimetype: MIME, bytes: &[u8]) -> bool {
     // Transform alias if needed
     let oldmime = convmime!(mimetype);
     let x = unconvmime!(get_alias(&oldmime));
@@ -432,11 +432,8 @@ fn match_filepath_noalias(mimetype: &str, filepath: &Path) -> bool {
 /// let result = tree_magic::match_filepath("image/gif", path);
 /// assert_eq!(result, true);
 /// ```
-pub fn match_filepath(mimetype: &str, filepath: &Path) -> bool {
-    // Transform alias if needed
-    let oldmime = convmime!(mimetype);
-    let x = unconvmime!(get_alias(&oldmime));
-    match_filepath_noalias(x, filepath)
+pub fn match_filepath(mimetype: MIME, filepath: &Path) -> bool {
+    match_filepath_noalias(get_alias(mimetype), filepath)
 }
 
 /// Gets the type of a file from a filepath, starting at a certain node
@@ -504,7 +501,7 @@ pub fn from_filepath_node(parentnode: NodeIndex, filepath: &Path) -> Option<MIME
 ///
 /// // Find the MIME type of the GIF
 /// let result = tree_magic::from_filepath(path);
-/// assert_eq!(result, Some("image/gif".to_string()));
+/// assert_eq!(result, Some("image/gif"));
 /// ```
 pub fn from_filepath(filepath: &Path) -> Option<MIME> {
     let node = match TYPE.graph.externals(Incoming).next() {
@@ -522,15 +519,15 @@ pub fn from_filepath(filepath: &Path) -> Option<MIME> {
 ///
 /// # Examples
 /// ```
-/// let mime1 = "application/zip".to_string();
-/// let mime2 = "application/x-zip-compressed".to_string();
+/// let mime1 = "application/zip";
+/// let mime2 = "application/x-zip-compressed";
 ///
 /// assert_eq!( tree_magic::is_alias(mime1, mime2), true );
 pub fn is_alias(mime1: MIME, mime2: MIME) -> bool {
-    let x = get_alias(&mime1);
-    let y = get_alias(&mime2);
+    let x = get_alias(mime1);
+    let y = get_alias(mime2);
 
-    return *x == mime2 || *y == mime1;
+    return x == mime2 || y == mime1;
 }
 
 /// Reads the given number of bytes from a file

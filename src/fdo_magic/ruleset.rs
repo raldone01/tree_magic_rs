@@ -1,4 +1,3 @@
-use crate::MIME;
 use super::MagicRule;
 
 use fnv::FnvHashMap;
@@ -53,21 +52,18 @@ fn magic_rules(input: &[u8]) -> IResult<&[u8], MagicRule<'_>> {
 
 /// Converts a magic file given as a &[u8] array
 /// to a vector of MagicEntry structs
-fn ruleset(input: &[u8]) -> IResult<&[u8], Vec<(MIME, Vec<MagicRule<'_>>)>> {
+fn ruleset(input: &[u8]) -> IResult<&[u8], Vec<(&str, Vec<MagicRule<'_>>)>> {
     // Parse the MIME type from "[priority: mime]"
-    let mime = map(
-        map_res(
-            terminated(
-                delimited(
-                    delimited(tag("["), is_not(":"), tag(":")), // priority
-                    is_not("]"),                                // mime
-                    tag("]"),
-                ),
-                tag("\n"),
+    let mime = map_res(
+        terminated(
+            delimited(
+                delimited(tag("["), is_not(":"), tag(":")), // priority
+                is_not("]"),                                // mime
+                tag("]"),
             ),
-            str::from_utf8,
+            tag("\n"),
         ),
-        str::to_string,
+        str::from_utf8,
     );
 
     let magic_entry = tuple((mime, many0(magic_rules)));
@@ -103,7 +99,7 @@ fn gen_graph(magic_rules: Vec<MagicRule<'_>>) -> DiGraph<MagicRule<'_>, u32> {
     graph
 }
 
-pub fn from_u8(b: &[u8]) -> Result<FnvHashMap<MIME, DiGraph<MagicRule<'_>, u32>>, String> {
+pub fn from_u8(b: &[u8]) -> Result<FnvHashMap<&str, DiGraph<MagicRule<'_>, u32>>, String> {
     let tuplevec = ruleset(b).map_err(|e| e.to_string())?.1;
     let res = tuplevec
         .into_iter()
