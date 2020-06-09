@@ -18,31 +18,17 @@ nom = "5.1"
 lazy_static = "^1.4"
 fnv = "^1"
 
-tabwriter = { version = "^1", optional = true }
-clap = { version = "^2", optional = true }
-scoped_threadpool = { version = "^0.1", optional = true }
-walkdir = { version = "^2", optional = true }
-num_cpus = { version = "^1", optional = true }
-
 [dev-dependencies]
 bencher = "^0.1"
-
-[features]
-cli = ["clap", "tabwriter", "scoped_threadpool", "walkdir", "num_cpus"]
-default = []
 
 [lib]
 crate-type = ["lib"]
 path = "src/lib.rs"
 
-[[bin]]
-required-features = ["cli"]
-name = "tmagic"
-path = "src/main.rs"
-
 [[bench]]
 name = "from_u8"
 harness = false
+
 [[bench]]
 name = "match_u8"
 harness = false

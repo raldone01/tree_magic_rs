@@ -109,19 +109,3 @@ pub fn from_u8(b: &[u8]) -> Result<FnvHashMap<MIME, DiGraph<super::MagicRule, u3
         .collect();
     Ok(res)
 }
-
-/// Loads the given magic file and outputs a vector of MagicEntry structs
-pub fn from_filepath(
-    filepath: &str,
-) -> Result<FnvHashMap<MIME, DiGraph<super::MagicRule, u32>>, String> {
-    use std::fs::File;
-    use std::io::prelude::*;
-    use std::io::BufReader;
-
-    let fmagic = File::open(filepath).map_err(|e| e.to_string())?;
-    let mut rmagic = BufReader::new(fmagic);
-    let mut bmagic = Vec::<u8>::new();
-    rmagic.read_to_end(&mut bmagic).map_err(|e| e.to_string())?;
-
-    from_u8(bmagic.as_slice())
-}
