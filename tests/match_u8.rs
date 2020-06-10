@@ -1,5 +1,5 @@
 mod match_u8 {
-    use tree_magic;
+    use tree_magic_mini as tree_magic;
 
     ///Image tests
     #[test]

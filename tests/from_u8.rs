@@ -1,6 +1,5 @@
 mod from_u8 {
-
-    use tree_magic;
+    use tree_magic_mini as tree_magic;
 
     macro_rules! convmime {
         ($x:expr) => {

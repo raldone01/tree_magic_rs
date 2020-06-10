@@ -1,6 +1,16 @@
-//! `tree_magic` is a Rust crate that determines the MIME type a given file or byte stream.
+//! `tree_magic_mini` is a Rust crate that determines the MIME type a given file or byte stream.
 //!
-//! # About
+//! This is a fork of the [tree_magic](https://crates.io/crates/tree_magic)
+//! crate by Allison Hancock. It includes the following changes:
+//! 
+//! * Updated dependencies.
+//! * Reduced copying and memory allocation, for a slight increase in speed and
+//!   decrease in memory use.
+//! * Reduced API surface. Some previously public APIs are now internal.
+//! * Removed the optional `cli` feature and `tree_magic` binary.
+//!
+//! # About tree_magic
+//!
 //! `tree_magic` is designed to be more efficient and to have less false positives compared
 //! to the old approach used by `libmagic`, or old-fashioned file extension comparisons.
 //!
@@ -9,6 +19,7 @@
 //! only check the files that make sense to check.
 //!
 //! # Features
+//!
 //! - Very fast perfomance (~150ns to check one file against one type,
 //!   between 5,000ns and 100,000ns to find a MIME type.)
 //! - Check if a file *is* a certain type.
@@ -22,11 +33,11 @@
 //! let input: &[u8] = include_bytes!("../tests/image/gif");
 //!
 //! // Find the MIME type of the GIF
-//! let result = tree_magic::from_u8(input);
+//! let result = tree_magic_mini::from_u8(input);
 //! assert_eq!(result, "image/gif");
 //!
 //! // Check if the MIME and the file are a match
-//! let result = tree_magic::match_u8("image/gif", input);
+//! let result = tree_magic_mini::match_u8("image/gif", input);
 //! assert_eq!(result, true);
 //! ```
 
@@ -306,7 +317,7 @@ fn match_u8_noalias(mimetype: &str, bytes: &[u8]) -> bool {
 /// let input: &[u8] = include_bytes!("../tests/image/gif");
 ///
 /// // Check if the MIME and the file are a match
-/// let result = tree_magic::match_u8("image/gif", input);
+/// let result = tree_magic_mini::match_u8("image/gif", input);
 /// assert_eq!(result, true);
 /// ```
 pub fn match_u8(mimetype: &str, bytes: &[u8]) -> bool {
@@ -338,7 +349,7 @@ fn from_u8_node(parentnode: NodeIndex, bytes: &[u8]) -> Option<MIME> {
 /// let input: &[u8] = include_bytes!("../tests/image/gif");
 ///
 /// // Find the MIME type of the GIF
-/// let result = tree_magic::from_u8(input);
+/// let result = tree_magic_mini::from_u8(input);
 /// assert_eq!(result, "image/gif");
 /// ```
 pub fn from_u8(bytes: &[u8]) -> MIME {
@@ -371,7 +382,7 @@ fn match_filepath_noalias(mimetype: &str, filepath: &Path) -> bool {
 /// let path: &Path = Path::new("tests/image/gif");
 ///
 /// // Check if the MIME and the file are a match
-/// let result = tree_magic::match_filepath("image/gif", path);
+/// let result = tree_magic_mini::match_filepath("image/gif", path);
 /// assert_eq!(result, true);
 /// ```
 pub fn match_filepath(mimetype: &str, filepath: &Path) -> bool {
@@ -424,7 +435,7 @@ fn from_filepath_node(parentnode: NodeIndex, filepath: &Path) -> Option<MIME> {
 /// let path: &Path = Path::new("tests/image/gif");
 ///
 /// // Find the MIME type of the GIF
-/// let result = tree_magic::from_filepath(path);
+/// let result = tree_magic_mini::from_filepath(path);
 /// assert_eq!(result, Some("image/gif"));
 /// ```
 pub fn from_filepath(filepath: &Path) -> Option<MIME> {

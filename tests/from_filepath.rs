@@ -1,4 +1,5 @@
 mod from_filepath {
+    use tree_magic_mini as tree_magic;
     use std::path::Path;
 
     #[test]

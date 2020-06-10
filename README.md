@@ -1,8 +1,27 @@
-# tree_magic
+# tree_magic_mini
 
-tree_magic is a Rust crate that determines the MIME type a given file or byte stream. 
+`tree_magic_mini` is a Rust crate that determines the MIME type a given file
+or byte stream. 
 
-Read the documentation at https://docs.rs/tree_magic/
+Read the documentation at https://docs.rs/tree_magic_mini/
+
+This is a fork of the [tree_magic](https://crates.io/crates/tree_magic)
+crate by Allison Hancock. It includes the following changes:
+
+* Updated dependencies.
+* Reduced copying and memory allocation, for a slight increase in speed and
+  decrease in memory use.
+* Reduced API surface. Some previously public APIs are now internal.
+* Removed the optional `cli` feature and `tree_magic` binary.
+
+These changes were made both to make the library more efficient, and to
+simplify the effort to maintain and optimize of this fork. I would like to
+eventually merge these changes back to the original `tree_magic` crate, and/or
+restore some of the removed features if there is demand for that.
+
+Continue reading for the original `tree_magic` documentation.
+
+## About tree_magic
 
 Unlike the typical approach that libmagic and file(1) uses, this loads all the file types in a tree based on subclasses. (EX: `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (MS Office 2007) subclasses `application/zip` which subclasses `application/octet-stream`) Then, instead of checking the file against *every* file type, it can traverse down the tree and only check the file types that make sense to check. (After all, the fastest check is the check that never gets run.)
 
