@@ -295,7 +295,7 @@ fn typegraph_walker<T: Clone>(
 }
 
 /// Transforms an alias into it's real type
-fn get_alias(mimetype: MIME) -> MIME {
+fn get_alias(mimetype: &str) -> &str {
     match ALIASES.get(mimetype) {
         Some(x) => x,
         None => mimetype,
@@ -326,7 +326,7 @@ fn match_u8_noalias(mimetype: &str, bytes: &[u8]) -> bool {
 /// let result = tree_magic::match_u8("image/gif", input);
 /// assert_eq!(result, true);
 /// ```
-pub fn match_u8(mimetype: MIME, bytes: &[u8]) -> bool {
+pub fn match_u8(mimetype: &str, bytes: &[u8]) -> bool {
     match_u8_noalias(get_alias(mimetype), bytes)
 }
 
@@ -408,7 +408,7 @@ fn match_filepath_noalias(mimetype: &str, filepath: &Path) -> bool {
 /// let result = tree_magic::match_filepath("image/gif", path);
 /// assert_eq!(result, true);
 /// ```
-pub fn match_filepath(mimetype: MIME, filepath: &Path) -> bool {
+pub fn match_filepath(mimetype: &str, filepath: &Path) -> bool {
     match_filepath_noalias(get_alias(mimetype), filepath)
 }
 
