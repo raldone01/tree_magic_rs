@@ -436,24 +436,6 @@ pub fn from_filepath(filepath: &Path) -> Option<MIME> {
     from_filepath_node(node, filepath)
 }
 
-/// Determines if a MIME is an alias of another MIME
-///
-/// If this returns true, that means the two MIME types are equivalent.
-/// If this returns false, either one of the MIME types are missing, or they are different.
-///
-/// # Examples
-/// ```
-/// let mime1 = "application/zip";
-/// let mime2 = "application/x-zip-compressed";
-///
-/// assert_eq!( tree_magic::is_alias(mime1, mime2), true );
-pub fn is_alias(mime1: MIME, mime2: MIME) -> bool {
-    let x = get_alias(mime1);
-    let y = get_alias(mime2);
-
-    return x == mime2 || y == mime1;
-}
-
 /// Reads the given number of bytes from a file
 fn read_bytes(filepath: &Path, bytecount: usize) -> Result<Vec<u8>, std::io::Error> {
     use std::fs::File;
