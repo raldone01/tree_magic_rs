@@ -12,7 +12,7 @@ crate by Allison Hancock. It includes the following changes:
 * Reduced copying and memory allocation, for a slight increase in speed and
   decrease in memory use.
 * Reduced API surface. Some previously public APIs are now internal.
-* Removed the optional `cli` feature and `tree_magic` binary.
+* Removed the optional `cli` feature and `tmagic` binary.
 
 These changes were made both to make the library more efficient, and to
 simplify the effort to maintain and optimize of this fork. I would like to

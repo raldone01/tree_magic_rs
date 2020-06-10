@@ -7,7 +7,7 @@
 //! * Reduced copying and memory allocation, for a slight increase in speed and
 //!   decrease in memory use.
 //! * Reduced API surface. Some previously public APIs are now internal.
-//! * Removed the optional `cli` feature and `tree_magic` binary.
+//! * Removed the optional `cli` feature and `tmagic` binary.
 //!
 //! # About tree_magic
 //!
