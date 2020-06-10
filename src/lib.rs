@@ -16,9 +16,6 @@
 //! - Can delegate different file types to different "checkers", reducing false positives
 //!   by choosing a different method of attack.
 //!
-//! # Feature flags
-//! `cli`:        Enable building of `tmagic` binary
-//!
 //! # Example
 //! ```rust
 //! // Load a GIF file
@@ -289,7 +286,7 @@ fn get_alias(mimetype: &str) -> &str {
 }
 
 /// Internal function. Checks if an alias exists, and if it does,
-/// then runs match_u8.
+/// then runs `from_u8`.
 fn match_u8_noalias(mimetype: &str, bytes: &[u8]) -> bool {
     match CHECKER_SUPPORT.get(mimetype) {
         None => false,
@@ -353,7 +350,7 @@ pub fn from_u8(bytes: &[u8]) -> MIME {
 }
 
 /// Internal function. Checks if an alias exists, and if it does,
-/// then runs `match_u8`.
+/// then runs `from_filepath`.
 fn match_filepath_noalias(mimetype: &str, filepath: &Path) -> bool {
     match CHECKER_SUPPORT.get(mimetype) {
         None => false,
