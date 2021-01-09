@@ -1,6 +1,6 @@
 [package]
 name = "tree_magic_mini"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
     "Matt Brubeck <mbrubeck@limpet.net>",
     "Allison Hancock <aahancoc@umich.edu>",
@@ -16,7 +16,7 @@ edition = "2018"
 
 [dependencies]
 petgraph = "^0.5"
-nom = "5.1"
+nom = "6.0"
 lazy_static = "^1.4"
 fnv = "^1"
 
