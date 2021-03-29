@@ -1,3 +1,21 @@
+# tree_magic_mini 2.0.0
+
+* Change license to GPL-2.0-or-later for compatibility with upstream
+  xdg-shared-mime-info license.
+
+# tree_magic_mini 1.0.1
+
+* Update to nom 6.
+
+# tree_magic_mini 1.0.0
+
+* Forked and changed name to `tree_magic_mini`
+* Updated dependencies.
+* Reduced copying and memory allocation, for a slight increase in speed and
+  decrease in memory use.
+* Reduced API surface. Some previously public APIs are now internal.
+* Removed the optional `cli` feature and `tmagic` binary.
+
 # 0.2.3
 
 Upgraded package versions to latest (except nom, which is currently stuck at

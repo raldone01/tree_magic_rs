@@ -1,6 +1,6 @@
 [package]
 name = "tree_magic_mini"
-version = "1.0.1"
+version = "2.0.0"
 authors = [
     "Matt Brubeck <mbrubeck@limpet.net>",
     "Allison Hancock <aahancoc@umich.edu>",
@@ -10,7 +10,7 @@ repository = "https://github.com/mbrubeck/tree_magic/"
 documentation = "https://docs.rs/tree_magic_mini/"
 readme = "README.md"
 keywords = ["mime", "filesystem", "media-types"]
-license = "MIT"
+license = "GPL-2.0-or-later"
 exclude = ["tests/*", "benches/*/"]
 edition = "2018"
 
