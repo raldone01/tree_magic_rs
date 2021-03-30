@@ -68,7 +68,7 @@ type MIME = &'static str;
 
 /// Check these types first
 /// TODO: Poll these from the checkers? Feels a bit arbitrary
-const TYPEORDER: [&'static str; 6] = [
+const TYPEORDER: [&str; 6] = [
     "image/png",
     "image/jpeg",
     "image/gif",
@@ -114,8 +114,8 @@ const CHECKERS: [CheckerStruct; CHECKERCOUNT] = [
 lazy_static! {
     static ref CHECKER_SUPPORT: FnvHashMap<MIME, usize> = {
         let mut out = FnvHashMap::<MIME, usize>::default();
-        for i in 0..CHECKERS.len() {
-            for j in (CHECKERS[i].get_supported)() {
+        for (i, c) in CHECKERS.iter().enumerate() {
+            for j in (c.get_supported)() {
                 out.insert(j, i);
             }
         }
@@ -126,8 +126,8 @@ lazy_static! {
 lazy_static! {
     static ref ALIASES: FnvHashMap<MIME, MIME> = {
         let mut out = FnvHashMap::<MIME, MIME>::default();
-        for i in 0..CHECKERS.len() {
-            out.extend((CHECKERS[i].get_aliaslist)());
+        for c in &CHECKERS {
+            out.extend((c.get_aliaslist)());
         }
         out
     };
@@ -159,11 +159,11 @@ fn graph_init() -> TypeStruct {
     // Get list of MIME types and MIME relations
     let mut mimelist = Vec::<MIME>::new();
     let mut edgelist_raw = Vec::<(MIME, MIME)>::new();
-    for i in 0..CHECKERS.len() {
-        mimelist.extend((CHECKERS[i].get_supported)());
-        edgelist_raw.extend((CHECKERS[i].get_subclasses)());
+    for c in &CHECKERS {
+        mimelist.extend((c.get_supported)());
+        edgelist_raw.extend((c.get_subclasses)());
     }
-    mimelist.sort();
+    mimelist.sort_unstable();
     mimelist.dedup();
     let mimelist = mimelist;
 
@@ -238,8 +238,8 @@ fn graph_init() -> TypeStruct {
 
     let mut edge_list_2 = FnvHashSet::<(NodeIndex, NodeIndex)>::default();
     for mimenode in graph.externals(Incoming) {
-        let ref mimetype = graph[mimenode];
-        let toplevel = mimetype.split("/").nth(0).unwrap_or("");
+        let mimetype = &graph[mimenode];
+        let toplevel = mimetype.split('/').next().unwrap_or("");
 
         if mimenode == node_text
             || mimenode == node_octet
@@ -285,7 +285,7 @@ fn typegraph_walker<T: Clone>(
 
     // Walk graph
     for childnode in children {
-        let ref mimetype = TYPE.graph[childnode];
+        let mimetype = &TYPE.graph[childnode];
 
         let result = (matchfn)(mimetype, input.clone());
         match result {

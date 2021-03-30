@@ -19,7 +19,7 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
                     .iter()
                     .skip(bound_min)
                     .take(bound_max - bound_min)
-                    .map(|&x| x)
+                    .copied()
                     .collect();
                 //println!("\t{:?} / {:?}", x, rule.val);
                 //println!("\tIndent: {}, Start: {}", rule.indent_level, rule.start_off);
@@ -32,15 +32,15 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
                     .iter()
                     .skip(bound_min) // Skip to start of area
                     .take(bound_max - bound_min) // Take until end of area - region length
-                    .map(|&x| x)
+                    .copied()
                     .collect(); // Convert to vector
-                let mut val: Vec<u8> = rule.val.iter().map(|&x| x).collect();
+                let mut val: Vec<u8> = rule.val.iter().copied().collect();
                 //println!("\t{:?} / {:?}", x, rule.val);
 
                 assert_eq!(x.len(), mask.len());
                 for i in 0..std::cmp::min(x.len(), mask.len()) {
                     x[i] &= mask[i];
-                    val[i] = val[i] & mask[i];
+                    val[i] &= mask[i];
                 }
                 //println!("\t & {:?} => {:?}", mask, x);
 
@@ -52,12 +52,12 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
         //println!("\tIndent: {}, Start: {}", rule.indent_level, rule.start_off);
 
         // Define our testing slice
-        let ref x: Vec<u8> = file.iter().take(file.len()).map(|&x| x).collect();
+        let x: &Vec<u8> = &file.iter().take(file.len()).copied().collect();
         let testarea: Vec<u8> = x
             .iter()
             .skip(bound_min)
             .take(bound_max - bound_min)
-            .map(|&x| x)
+            .copied()
             .collect();
         //println!("{:?}, {:?}, {:?}\n", file, testarea, rule.val);
 
@@ -67,7 +67,7 @@ fn from_u8_singlerule(file: &[u8], rule: &super::MagicRule) -> bool {
             y.clear();
 
             // Apply mask to value
-            let ref rule_mask = rule.mask;
+            let rule_mask = &rule.mask;
             match *rule_mask {
                 Some(ref mask) => {
                     for i in 0..rule.val.len() {
@@ -98,7 +98,7 @@ pub fn from_u8_walker(
     let n = graph.neighbors_directed(node, Outgoing);
 
     if isroot {
-        let ref rule = graph[node];
+        let rule = &graph[node];
 
         // Check root
         if !from_u8_singlerule(&file, rule) {
@@ -115,7 +115,7 @@ pub fn from_u8_walker(
 
     // Check subrules recursively
     for y in n {
-        let ref rule = graph[y];
+        let rule = &graph[y];
 
         if from_u8_singlerule(&file, rule) {
             // Check next indent level if needed

@@ -31,10 +31,10 @@ fn rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
 
 #[cfg(feature = "with-gpl-data")]
 fn static_rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
-    super::ruleset::from_u8(tree_magic_db::magic()).unwrap_or(FnvHashMap::default())
+    super::ruleset::from_u8(tree_magic_db::magic()).unwrap_or_default()
 }
 
 #[cfg(not(feature = "with-gpl-data"))]
 fn runtime_rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
-    runtime::rules().unwrap_or(FnvHashMap::default())
+    runtime::rules().unwrap_or_default()
 }

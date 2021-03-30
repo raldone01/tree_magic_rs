@@ -34,7 +34,7 @@ pub fn from_filepath(filepath: &Path, mimetype: &str) -> bool {
     // Get # of bytes to read
     let mut scanlen = 0;
     for x in magic_rules.raw_nodes() {
-        let ref y = x.weight;
+        let y = &x.weight;
         let tmplen = y.start_off as usize + y.val.len() + y.region_len as usize;
 
         if tmplen > scanlen {
