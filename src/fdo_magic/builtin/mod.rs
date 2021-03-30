@@ -13,9 +13,28 @@ lazy_static! {
 
 /// Load magic file before anything else.
 lazy_static! {
-    static ref ALLRULES: FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> =
-        super::ruleset::from_u8(include_bytes!("magic")).unwrap_or(FnvHashMap::default());
+    static ref ALLRULES: FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> = rules();
 }
 
 pub mod check;
 pub mod init;
+
+#[cfg(not(feature = "with-gpl-data"))]
+mod runtime;
+
+fn rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
+    #[cfg(feature = "with-gpl-data")]
+    return static_rules();
+    #[cfg(not(feature = "with-gpl-data"))]
+    return runtime_rules();
+}
+
+#[cfg(feature = "with-gpl-data")]
+fn static_rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
+    super::ruleset::from_u8(tree_magic_db::magic()).unwrap_or(FnvHashMap::default())
+}
+
+#[cfg(not(feature = "with-gpl-data"))]
+fn runtime_rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
+    runtime::rules().unwrap_or(FnvHashMap::default())
+}

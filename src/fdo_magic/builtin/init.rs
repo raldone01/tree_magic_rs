@@ -1,8 +1,25 @@
 use crate::MIME;
 use fnv::FnvHashMap;
 
+#[cfg(not(feature = "with-gpl-data"))]
+use super::runtime;
+
+fn aliases() -> &'static str {
+    #[cfg(feature = "with-gpl-data")]
+    return tree_magic_db::aliases();
+    #[cfg(not(feature = "with-gpl-data"))]
+    return runtime::aliases();
+}
+
+fn subclasses() -> &'static str {
+    #[cfg(feature = "with-gpl-data")]
+    return tree_magic_db::subclasses();
+    #[cfg(not(feature = "with-gpl-data"))]
+    return runtime::subclasses();
+}
+
 pub fn get_aliaslist() -> FnvHashMap<MIME, MIME> {
-    include_str!("aliases")
+    aliases()
         .lines()
         .map(|line| {
             let mut parts = line.split_whitespace();
@@ -20,7 +37,7 @@ pub fn get_supported() -> Vec<MIME> {
 
 /// Get list of parent -> child subclass links
 pub fn get_subclasses() -> Vec<(MIME, MIME)> {
-    include_str!("subclasses")
+    subclasses()
         .lines()
         .map(|line| {
             let mut parts = line.split_whitespace();

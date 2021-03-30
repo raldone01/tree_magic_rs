@@ -1,6 +1,6 @@
 mod from_filepath {
-    use tree_magic_mini as tree_magic;
     use std::path::Path;
+    use tree_magic_mini as tree_magic;
 
     #[test]
     fn nonexistent_file_returns_none() {

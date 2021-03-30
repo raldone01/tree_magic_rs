@@ -19,6 +19,11 @@ petgraph = "^0.5"
 nom = "6.0"
 lazy_static = "^1.4"
 fnv = "^1"
+once_cell = "^1"
+tree_magic_db = { path = "./magic_db" , optional = true }
+
+[features]
+with-gpl-data = ["tree_magic_db"]
 
 [dev-dependencies]
 bencher = "^0.1"
@@ -26,6 +31,9 @@ bencher = "^0.1"
 [lib]
 crate-type = ["lib"]
 path = "src/lib.rs"
+
+[workspace]
+members = ["magic_db"]
 
 [[bench]]
 name = "from_u8"
