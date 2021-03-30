@@ -77,46 +77,26 @@ const TYPEORDER: [&str; 6] = [
     "application/pdf",
 ];
 
-/// Struct used to define checker functions for the sake of boilerplate reduction
-struct CheckerStruct {
-    from_u8: fn(&[u8], &str) -> bool,
-    from_filepath: fn(&Path, &str) -> bool,
-    get_supported: fn() -> Vec<MIME>,
-    get_subclasses: fn() -> Vec<(MIME, MIME)>,
-    get_aliaslist: fn() -> FnvHashMap<MIME, MIME>,
+pub(crate) trait Checker: Send + Sync {
+    fn from_u8(&self, file: &[u8], mimetype: &str) -> bool;
+    fn from_filepath(&self, filepath: &Path, mimetype: &str) -> bool;
+    fn get_supported(&self) -> Vec<MIME>;
+    fn get_subclasses(&self) -> Vec<(MIME, MIME)>;
+    fn get_aliaslist(&self) -> FnvHashMap<MIME, MIME>;
 }
 
-/// Maximum number of checkers supported with build config.
-/// TODO: Find any better way to do this!
-const CHECKERCOUNT: usize = 2;
-
-/// List of checker functions
-const CHECKERS: [CheckerStruct; CHECKERCOUNT] = [
-    // fdo_magic
-    CheckerStruct {
-        from_u8: fdo_magic::builtin::check::from_u8,
-        from_filepath: fdo_magic::builtin::check::from_filepath,
-        get_supported: fdo_magic::builtin::init::get_supported,
-        get_subclasses: fdo_magic::builtin::init::get_subclasses,
-        get_aliaslist: fdo_magic::builtin::init::get_aliaslist,
-    },
-    // basetype
-    CheckerStruct {
-        from_u8: basetype::check::from_u8,
-        from_filepath: basetype::check::from_filepath,
-        get_supported: basetype::init::get_supported,
-        get_subclasses: basetype::init::get_subclasses,
-        get_aliaslist: basetype::init::get_aliaslist,
-    },
+static CHECKERS: &[&'static dyn Checker] = &[
+    &fdo_magic::builtin::check::FdoMagic,
+    &basetype::check::BaseType,
 ];
 
-/// Mappings between modules and supported mimes (by index in table above)
+/// Mappings between modules and supported mimes
 lazy_static! {
-    static ref CHECKER_SUPPORT: FnvHashMap<MIME, usize> = {
-        let mut out = FnvHashMap::<MIME, usize>::default();
-        for (i, c) in CHECKERS.iter().enumerate() {
-            for j in (c.get_supported)() {
-                out.insert(j, i);
+    static ref CHECKER_SUPPORT: FnvHashMap<MIME, &'static dyn Checker> = {
+        let mut out = FnvHashMap::<MIME, &'static dyn Checker>::default();
+        for &c in CHECKERS {
+            for m in c.get_supported() {
+                out.insert(m, c);
             }
         }
         out
@@ -126,8 +106,8 @@ lazy_static! {
 lazy_static! {
     static ref ALIASES: FnvHashMap<MIME, MIME> = {
         let mut out = FnvHashMap::<MIME, MIME>::default();
-        for c in &CHECKERS {
-            out.extend((c.get_aliaslist)());
+        for &c in CHECKERS {
+            out.extend(c.get_aliaslist());
         }
         out
     };
@@ -159,9 +139,9 @@ fn graph_init() -> TypeStruct {
     // Get list of MIME types and MIME relations
     let mut mimelist = Vec::<MIME>::new();
     let mut edgelist_raw = Vec::<(MIME, MIME)>::new();
-    for c in &CHECKERS {
-        mimelist.extend((c.get_supported)());
-        edgelist_raw.extend((c.get_subclasses)());
+    for &c in CHECKERS {
+        mimelist.extend(c.get_supported());
+        edgelist_raw.extend(c.get_subclasses());
     }
     mimelist.sort_unstable();
     mimelist.dedup();
@@ -313,7 +293,7 @@ fn get_alias(mimetype: &str) -> &str {
 fn match_u8_noalias(mimetype: &str, bytes: &[u8]) -> bool {
     match CHECKER_SUPPORT.get(mimetype) {
         None => false,
-        Some(y) => (CHECKERS[*y].from_u8)(bytes, mimetype),
+        Some(y) => y.from_u8(bytes, mimetype),
     }
 }
 
@@ -377,7 +357,7 @@ pub fn from_u8(bytes: &[u8]) -> MIME {
 fn match_filepath_noalias(mimetype: &str, filepath: &Path) -> bool {
     match CHECKER_SUPPORT.get(mimetype) {
         None => false,
-        Some(y) => (CHECKERS[*y].from_filepath)(filepath, mimetype),
+        Some(c) => c.from_filepath(&filepath, mimetype),
     }
 }
 
