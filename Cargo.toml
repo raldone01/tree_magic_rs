@@ -10,7 +10,7 @@ repository = "https://github.com/mbrubeck/tree_magic/"
 documentation = "https://docs.rs/tree_magic_mini/"
 readme = "README.md"
 keywords = ["mime", "filesystem", "media-types"]
-license = "GPL-2.0-or-later"
+license = "MIT"
 exclude = ["tests/*", "benches/*/"]
 edition = "2018"
 
