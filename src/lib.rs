@@ -244,11 +244,11 @@ fn graph_init() -> TypeStruct {
 }
 
 /// Just the part of from_*_node that walks the graph
-fn typegraph_walker<T: Clone>(
-    parentnode: NodeIndex,
-    input: T,
-    matchfn: fn(&str, T) -> bool,
-) -> Option<MIME> {
+fn typegraph_walker<T, F>(parentnode: NodeIndex, input: &T, matchfn: F) -> Option<MIME>
+where
+    T: ?Sized,
+    F: Fn(&str, &T) -> bool,
+{
     // Pull most common types towards top
     let mut children: Vec<NodeIndex> = TYPE
         .graph
@@ -267,7 +267,7 @@ fn typegraph_walker<T: Clone>(
     for childnode in children {
         let mimetype = &TYPE.graph[childnode];
 
-        let result = (matchfn)(mimetype, input.clone());
+        let result = matchfn(mimetype, input);
         match result {
             true => match typegraph_walker(childnode, input, matchfn) {
                 Some(foundtype) => return Some(foundtype),
