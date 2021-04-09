@@ -2,7 +2,7 @@
 //!
 //! This is a fork of the [tree_magic](https://crates.io/crates/tree_magic)
 //! crate by Allison Hancock. It includes the following changes:
-//! 
+//!
 //! * Updated dependencies.
 //! * Reduced copying and memory allocation, for a slight increase in speed and
 //!   decrease in memory use.
@@ -27,6 +27,18 @@
 //! - Can delegate different file types to different "checkers", reducing false positives
 //!   by choosing a different method of attack.
 //!
+//! ## Licensing and the MIME database
+//!
+//! By default, `tree_magic_mini` will attempt to load the shared MIME info
+//! database from the standard locations at runtime.
+//!
+//! If you won't have the database files available, or would like to include them
+//! in your binary for simplicity, you can optionally embed the database
+//! information if you enable the `tree_magic_db` feature.
+//!
+//! **As the magic database files themselves are licensed under the GPL, you must
+//! make sure your project uses a compatible license if you enable this behaviour.**
+//!
 //! # Example
 //! ```rust
 //! // Load a GIF file
@@ -40,16 +52,6 @@
 //! let result = tree_magic_mini::match_u8("image/gif", input);
 //! assert_eq!(result, true);
 //! ```
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 
 #![allow(unused_doc_comments)]
 

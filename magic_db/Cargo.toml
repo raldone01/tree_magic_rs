@@ -1,0 +1,7 @@
+[package]
+name = "tree_magic_db"
+version = "1.0.0"
+authors = ["Richard Bradfield <bradfier@fstab.me>"]
+description = "Packages the FreeDesktop.org shared MIME database for optional use with tree_magic_mini"
+license = "GPL-2.0-or-later"
+edition = "2018"

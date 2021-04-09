@@ -19,6 +19,20 @@ simplify the effort to maintain and optimize of this fork. I would like to
 eventually merge these changes back to the original `tree_magic` crate, and/or
 restore some of the removed features if there is demand for that.
 
+## Licensing and the MIME database
+
+By default, `tree_magic_mini` will attempt to load the shared MIME info
+database from the standard locations at runtime.
+
+If you won't have the database files available, or would like to include them
+in your binary for simplicity, you can optionally embed the database
+information if you enable the `tree_magic_db` feature.
+
+**As the magic database files themselves are licensed under the GPL, you must
+make sure your project uses a compatible license if you enable this behaviour.**
+
+---
+
 Continue reading for the original `tree_magic` documentation.
 
 ## About tree_magic
