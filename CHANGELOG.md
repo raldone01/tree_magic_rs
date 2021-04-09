@@ -1,3 +1,13 @@
+# tree_magic_mini 3.0.0
+
+* Split GPL-licensed files into a separate optional dependency. The main crate
+  is now MIT-licensed, and searches for data files installed on the system at
+  run-time by default.
+
+  If you enable the `with-gpl-data` feature, then the data files will be
+  hard-coded into the library at compile time.  Programs that use this feature
+  must be distributed according to the terms of the GNU GPL 2.0 or later.
+
 # tree_magic_mini 2.0.0
 
 * Change license to GPL-2.0-or-later for compatibility with upstream

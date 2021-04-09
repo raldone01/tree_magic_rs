@@ -1,6 +1,6 @@
 [package]
 name = "tree_magic_mini"
-version = "2.0.0"
+version = "3.0.0"
 authors = [
     "Matt Brubeck <mbrubeck@limpet.net>",
     "Allison Hancock <aahancoc@umich.edu>",
@@ -20,7 +20,7 @@ nom = "6.0"
 lazy_static = "^1.4"
 fnv = "^1"
 once_cell = "^1"
-tree_magic_db = { path = "./magic_db" , optional = true }
+tree_magic_db = { version = "3", path = "./magic_db" , optional = true }
 
 [features]
 with-gpl-data = ["tree_magic_db"]
