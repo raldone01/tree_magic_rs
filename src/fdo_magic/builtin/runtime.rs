@@ -90,5 +90,5 @@ pub(crate) fn subclasses() -> &'static str {
 
 pub(crate) fn rules() -> Result<FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>>, String> {
     let files = RUNTIME_RULES.get_or_init(load_xdg_shared_magic);
-    Ok(ruleset::from_multiple(files).unwrap())
+    ruleset::from_multiple(files)
 }
