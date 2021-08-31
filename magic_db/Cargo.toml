@@ -5,3 +5,4 @@ authors = ["Richard Bradfield <bradfier@fstab.me>"]
 description = "Packages the FreeDesktop.org shared MIME database for optional use with tree_magic_mini"
 license = "GPL-2.0-or-later"
 edition = "2018"
+repository = "https://github.com/mbrubeck/tree_magic/"
