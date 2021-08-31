@@ -16,7 +16,7 @@ edition = "2018"
 
 [dependencies]
 petgraph = "^0.5"
-nom = "6.0"
+nom = "7.0"
 lazy_static = "^1.4"
 fnv = "^1"
 bytecount = "^0.6"
