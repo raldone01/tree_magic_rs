@@ -13,6 +13,7 @@ crate by Allison Hancock. It includes the following changes:
   decrease in memory use.
 * Reduced API surface. Some previously public APIs are now internal.
 * Removed the optional `cli` feature and `tmagic` binary.
+* Split GPL-licensed data files into a separate optional crate.
 
 These changes were made both to make the library more efficient, and to
 simplify the effort to maintain and optimize of this fork. I would like to
