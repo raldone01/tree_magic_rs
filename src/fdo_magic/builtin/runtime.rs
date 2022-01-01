@@ -15,7 +15,7 @@ static ALIAS_STRING: OnceCell<String> = OnceCell::new();
 static SUBCLASS_STRING: OnceCell<String> = OnceCell::new();
 
 /// Load the magic database from the predefined locations in the XDG standard
-fn load_xdg_shared_magic() -> Vec<Vec<u8>> {
+fn load_xdg_shared_magic() -> Result<Vec<Vec<u8>>, String> {
     const SEARCH_PATHS: &[&str; 3] = &[
         "/usr/share/mime/magic",
         "/usr/local/share/mime/magic",
@@ -29,16 +29,16 @@ fn load_xdg_shared_magic() -> Vec<Vec<u8>> {
         .map(|mut f| {
             let mut buf = vec![];
             f.read_to_end(&mut buf)
-                .expect("Failed to read magic file bytes");
-            buf
+                .map_err(|e| format!("Failed to read magic file bytes: {:#?}", e))?;
+            Ok(buf)
         })
-        .collect();
+        .collect::<Result<_, String>>()?;
 
     if files.is_empty() {
-        panic!("No MIME magic files found in the XDG default paths");
+        Err("No MIME magic files found in the XDG default paths".to_string())
+    } else {
+        Ok(files)
     }
-
-    files
 }
 
 /// Load a number of files at `paths` and concatenate them together with a newline
@@ -89,6 +89,6 @@ pub(crate) fn subclasses() -> &'static str {
 }
 
 pub(crate) fn rules() -> Result<FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>>, String> {
-    let files = RUNTIME_RULES.get_or_init(load_xdg_shared_magic);
+    let files = RUNTIME_RULES.get_or_try_init(load_xdg_shared_magic)?;
     ruleset::from_multiple(files)
 }
