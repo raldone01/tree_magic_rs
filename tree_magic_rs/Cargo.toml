@@ -1,5 +1,5 @@
 [package]
-name = "tree_magic_mini_rs"
+name = "tree_magic_rs"
 version = "0.0.1"
 authors = [
     "Matt Brubeck <mbrubeck@limpet.net>",
@@ -7,8 +7,8 @@ authors = [
     "raldone01 <raldone01@gmail.com>",
 ]
 description = "Determines the MIME type of a file by traversing a filetype tree."
-repository = "https://github.com/raldone01/tree_magic_mini_rs/"
-documentation = "https://docs.rs/tree_magic_mini_rs/"
+repository = "https://github.com/raldone01/tree_magic_rs/"
+documentation = "https://docs.rs/tree_magic_rs/"
 readme = "README.md"
 keywords = ["mime", "filesystem", "media-types"]
 license = "MIT"
