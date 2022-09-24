@@ -1,3 +1,7 @@
+# Unreleased
+
+# tree_magic_mini_rs 0.0.1
+
 # tree_magic_mini 3.0.0
 
 * Split GPL-licensed files into a separate optional dependency. The main crate
@@ -29,7 +33,7 @@
 # 0.2.3
 
 Upgraded package versions to latest (except nom, which is currently stuck at
-3.x) and fixed the paths in the doc tests 
+3.x) and fixed the paths in the doc tests
 
 # 0.2.2
 
@@ -58,11 +62,11 @@ Major changes, front-end and back.
 - Major speed improvements
 
 # 0.1.1
- 
+
 - *Changed public interface*: Added `from_u8` export function
 - *Changed public interface*: Changed len argument for `u8` functions from `u32` to `usize`
 - Minor speed improvements in `fdo_magic` checker
- 
+
 # 0.1.0
- 
+
 Initial release
