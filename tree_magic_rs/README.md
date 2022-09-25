@@ -3,7 +3,6 @@
 [![Rust-Main-CI](https://github.com/raldone01/tree_magic_rs/actions/workflows/rust_main.yml/badge.svg)](https://github.com/raldone01/tree_magic_rs/actions/workflows/rust_main.yml)
 [![docs.rs](https://docs.rs/tree_magic_rs/badge.svg)](https://docs.rs/tree_magic_rs)
 [![crates.io](https://img.shields.io/crates/v/tree_magic_rs.svg)](https://crates.io/crates/tree_magic_rs)
-[![rustc](https://img.shields.io/badge/rustc-nightly-lightgrey)](https://doc.rust-lang.org/nightly/std/)
 
 <!-- The rest of this section comes almost straight from the crate docs from the source. Double check the doc tests. -->
 
