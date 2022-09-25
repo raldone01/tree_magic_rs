@@ -48,9 +48,9 @@ impl LoadedDatabase {
     }
   }
 
-  pub fn rules(&self) -> Result<FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>>, String> {
-    let files = self.runtime_rules;
-    ruleset::from_multiple(&files)
+  pub fn rules<'a>(&'a self) -> Result<FnvHashMap<MIME, DiGraph<MagicRule<'a>, u32>>, String> {
+    let files = &self.runtime_rules;
+    ruleset::from_multiple(files)
   }
 
   pub fn aliases(&self) -> &str {

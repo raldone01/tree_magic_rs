@@ -1,14 +1,18 @@
 use crate::basetype;
 use crate::fdo_magic;
+use crate::fdo_magic::builtin::LoadedDatabase;
 use fnv::FnvHashMap;
 use fnv::FnvHashSet;
 use petgraph::prelude::*;
 use std::path::Path;
+use std::rc::Rc;
+use std::sync::Arc;
 
-pub type MIME = &'static str;
-pub type TypeStruct = DiGraph<MIME, u32>;
+pub type MIME<'a> = &'a str;
+pub type TypeStruct = DiGraph<String, u32>;
 
-/// TODO
+/// TODO: docs
+/// TODO: Optimize memory footprint using `Pin` and `&str`s?
 pub struct MimeDatabase {
   /// Information about currently loaded MIME types
   ///
@@ -20,19 +24,20 @@ pub struct MimeDatabase {
   /// The root of the graph is "all/all", so start traversing there unless
   /// you need to jump to a particular node.
   graph: TypeStruct,
-  checker_support: FnvHashMap<MIME, &'static dyn Checker>,
-  aliases: FnvHashMap<MIME, MIME>,
+  checker_support: FnvHashMap<String, Rc<dyn Checker>>,
+  aliases: FnvHashMap<String, String>,
+  checkers: Vec<Rc<dyn Checker>>,
 }
 impl MimeDatabase {
   // Initialize filetype graph
-  fn graph_init() -> TypeStruct {
-    let mut graph = DiGraph::<MIME, u32>::new();
-    let mut added_mimes = FnvHashMap::<MIME, NodeIndex>::default();
+  fn graph_init(checkers: &[Rc<dyn Checker>]) -> TypeStruct {
+    let mut graph = DiGraph::<String, u32>::new(); // TODO: restore &str
+    let mut added_mimes = FnvHashMap::<String, NodeIndex>::default(); // TODO: restore &str
 
     // Get list of MIME types and MIME relations
     let mut mimelist = Vec::<MIME>::new();
     let mut edgelist_raw = Vec::<(MIME, MIME)>::new();
-    for &c in CHECKERS {
+    for c in checkers {
       mimelist.extend(c.get_supported());
       edgelist_raw.extend(c.get_subclasses());
     }
@@ -42,8 +47,8 @@ impl MimeDatabase {
 
     // Create all nodes
     for mimetype in mimelist.iter() {
-      let node = graph.add_node(mimetype);
-      added_mimes.insert(mimetype, node);
+      let node = graph.add_node(mimetype.to_string());
+      added_mimes.insert(mimetype.to_string(), node);
     }
 
     let mut edge_list = FnvHashSet::<(NodeIndex, NodeIndex)>::with_capacity_and_hasher(
@@ -54,14 +59,14 @@ impl MimeDatabase {
       let child_raw = x.0;
       let parent_raw = x.1;
 
-      let parent = match added_mimes.get(&parent_raw) {
+      let parent = match added_mimes.get(parent_raw) {
         Some(node) => *node,
         None => {
           continue;
         },
       };
 
-      let child = match added_mimes.get(&child_raw) {
+      let child = match added_mimes.get(child_raw) {
         Some(node) => *node,
         None => {
           continue;
@@ -79,32 +84,32 @@ impl MimeDatabase {
     let node_text = match added_mimes_tmp.get("text/plain") {
       Some(x) => *x,
       None => {
-        let node = graph.add_node("text/plain");
-        added_mimes.insert("text/plain", node);
+        let node = graph.add_node("text/plain".to_string());
+        added_mimes.insert("text/plain".to_string(), node);
         node
       },
     };
     let node_octet = match added_mimes_tmp.get("application/octet-stream") {
       Some(x) => *x,
       None => {
-        let node = graph.add_node("application/octet-stream");
-        added_mimes.insert("application/octet-stream", node);
+        let node = graph.add_node("application/octet-stream".to_string());
+        added_mimes.insert("application/octet-stream".to_string(), node);
         node
       },
     };
     let node_allall = match added_mimes_tmp.get("all/all") {
       Some(x) => *x,
       None => {
-        let node = graph.add_node("all/all");
-        added_mimes.insert("all/all", node);
+        let node = graph.add_node("all/all".to_string());
+        added_mimes.insert("all/all".to_string(), node);
         node
       },
     };
     let node_allfiles = match added_mimes_tmp.get("all/allfiles") {
       Some(x) => *x,
       None => {
-        let node = graph.add_node("all/allfiles");
-        added_mimes.insert("all/allfiles", node);
+        let node = graph.add_node("all/allfiles".to_string());
+        added_mimes.insert("all/allfiles".to_string(), node);
         node
       },
     };
@@ -135,30 +140,43 @@ impl MimeDatabase {
 
     graph
   }
-  fn aliases_init() -> FnvHashMap<MIME, MIME> {
-    let mut out = FnvHashMap::<MIME, MIME>::default();
-    for &c in CHECKERS {
-      out.extend(c.get_aliaslist());
+  fn aliases_init(checkers: &[Rc<dyn Checker>]) -> FnvHashMap<String, String> {
+    let mut out = FnvHashMap::<String, String>::default();
+    for c in checkers {
+      out.extend(
+        c.get_aliaslist()
+          .iter()
+          .map(|(s1, s2)| (s1.to_string(), s2.to_string())),
+      );
     }
     out
   }
   /// Mappings between modules and supported mimes
-  fn checker_support_init() -> FnvHashMap<MIME, &'static dyn Checker> {
-    let mut out = FnvHashMap::<MIME, &'static dyn Checker>::default();
-    for &c in CHECKERS {
+  fn checker_support_init(checkers: &[Rc<dyn Checker>]) -> FnvHashMap<String, Rc<dyn Checker>> {
+    let mut out = FnvHashMap::<String, Rc<dyn Checker>>::default(); // TODO: restore &str
+    for c in checkers {
       for m in c.get_supported() {
-        out.insert(m, c);
+        out.insert(m.to_string(), c.to_owned());
       }
     }
     out
   }
 
   /// Creates a new MimeDatabase from a magic file blob.
-  pub fn new(magic_blob: &[u8]) -> MimeDatabase {
+  pub fn new(/*magic_blob: &[u8]*/) -> MimeDatabase {
+    let ldb = Arc::new(LoadedDatabase::load_xdg_shared_magic().unwrap());
+    let checkers: Vec<Rc<dyn Checker>> = vec![
+      Rc::new(fdo_magic::builtin::check::FdoMagic::new(ldb.to_owned())),
+      Rc::new(basetype::check::BaseType::new(ldb)),
+    ];
+    let graph = Self::graph_init(&checkers);
+    let checker_support = Self::checker_support_init(&checkers);
+    let aliases = Self::aliases_init(&checkers);
     MimeDatabase {
-      graph: Self::graph_init(),
-      checker_support: Self::checker_support_init(),
-      aliases: Self::aliases_init(),
+      graph,
+      checker_support,
+      aliases,
+      checkers,
     }
   }
 
@@ -176,7 +194,7 @@ impl MimeDatabase {
 
     for i in 0..children.len() {
       let x = children[i];
-      if TYPEORDER.contains(&self.graph[x]) {
+      if TYPEORDER.contains(&self.graph[x].as_str()) {
         children.remove(i);
         children.insert(0, x);
       }
@@ -242,7 +260,7 @@ impl MimeDatabase {
   /// let input: &[u8] = include_bytes!("../tests/image/gif");
   ///
   /// // Check if the MIME and the file are a match
-  /// let result = tree_magic_mini::match_u8("image/gif", input);
+  /// let result = tree_magic_rs::match_u8("image/gif", input);
   /// assert_eq!(result, true);
   /// ```
   pub fn match_u8(&self, mimetype: &str, bytes: &[u8]) -> bool {
@@ -374,11 +392,6 @@ pub(crate) trait Checker: Send + Sync {
   fn get_subclasses(&self) -> Vec<(MIME, MIME)>;
   fn get_aliaslist(&self) -> FnvHashMap<MIME, MIME>;
 }
-
-static CHECKERS: &[&'static dyn Checker] = &[
-  &fdo_magic::builtin::check::FdoMagic,
-  &basetype::check::BaseType,
-];
 
 /// Reads the given number of bytes from a file
 pub fn read_bytes(filepath: &Path, bytecount: usize) -> Result<Vec<u8>, std::io::Error> {

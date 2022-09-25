@@ -1,17 +1,10 @@
-use super::runtime;
+use super::{runtime, LoadedDatabase};
 use crate::MIME;
 use fnv::FnvHashMap;
 
-fn aliases() -> &'static str {
-  return runtime::aliases();
-}
-
-fn subclasses() -> &'static str {
-  return runtime::subclasses();
-}
-
-pub fn get_aliaslist() -> FnvHashMap<MIME, MIME> {
-  aliases()
+pub fn get_aliaslist(ldb: &runtime::LoadedDatabase) -> FnvHashMap<MIME, MIME> {
+  ldb
+    .aliases()
     .lines()
     .map(|line| {
       let mut parts = line.split_whitespace();
@@ -23,22 +16,29 @@ pub fn get_aliaslist() -> FnvHashMap<MIME, MIME> {
 }
 
 /// Get list of supported MIME types
-pub fn get_supported() -> Vec<MIME> {
-  super::ALLRULES.keys().cloned().collect()
+pub fn get_supported(ldb: &LoadedDatabase) -> Vec<MIME> {
+  super::rules(ldb).keys().cloned().collect()
 }
 
 /// Get list of parent -> child subclass links
-pub fn get_subclasses() -> Vec<(MIME, MIME)> {
-  subclasses()
+pub fn get_subclasses(ldb: &runtime::LoadedDatabase) -> Vec<(MIME, MIME)> {
+  ldb
+    .subclasses()
     .lines()
     .map(|line| {
       let mut parts = line.split_whitespace();
 
       let child = parts.next().unwrap();
-      let child = super::ALIASES.get(child).copied().unwrap_or(child);
+      let child = super::init::get_aliaslist(ldb)
+        .get(child)
+        .copied()
+        .unwrap_or(child);
 
       let parent = parts.next().unwrap();
-      let parent = super::ALIASES.get(parent).copied().unwrap_or(parent);
+      let parent = super::init::get_aliaslist(ldb)
+        .get(parent)
+        .copied()
+        .unwrap_or(parent);
 
       (parent, child)
     })

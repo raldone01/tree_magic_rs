@@ -3,27 +3,15 @@
 use super::MagicRule;
 use crate::MIME;
 use fnv::FnvHashMap;
-use lazy_static::lazy_static;
 use petgraph::prelude::*;
 
-/// Preload alias list
-lazy_static! {
-  static ref ALIASES: FnvHashMap<MIME, MIME> = init::get_aliaslist();
-}
-
-/// Load magic file before anything else.
-lazy_static! {
-  static ref ALLRULES: FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> = rules();
-}
-
 pub mod check;
+pub use check::FdoMagic;
 pub mod init;
 
 mod runtime;
+pub use runtime::LoadedDatabase;
 
-fn rules() -> FnvHashMap<MIME, DiGraph<MagicRule<'static>, u32>> {
-  runtime::LoadedDatabase::load_xdg_shared_magic()
-    .unwrap()
-    .rules()
-    .unwrap()
+fn rules<'a>(ldb: &'a runtime::LoadedDatabase) -> FnvHashMap<MIME, DiGraph<MagicRule<'a>, u32>> {
+  ldb.rules().unwrap()
 }
