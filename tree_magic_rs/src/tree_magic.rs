@@ -26,7 +26,6 @@ pub struct MimeDatabase {
   graph: TypeStruct,
   checker_support: FnvHashMap<String, Rc<dyn Checker>>,
   aliases: FnvHashMap<String, String>,
-  checkers: Vec<Rc<dyn Checker>>,
 }
 impl MimeDatabase {
   // Initialize filetype graph
@@ -176,7 +175,6 @@ impl MimeDatabase {
       graph,
       checker_support,
       aliases,
-      checkers,
     }
   }
 

@@ -99,16 +99,6 @@ fn gen_graph(magic_rules: Vec<MagicRule<'_>>) -> DiGraph<MagicRule<'_>, u32> {
     graph
 }
 
-#[cfg(feature = "with-gpl-data")]
-pub fn from_u8(b: &[u8]) -> Result<FnvHashMap<&str, DiGraph<MagicRule<'_>, u32>>, String> {
-    let tuplevec = ruleset(b).map_err(|e| e.to_string())?.1;
-    let res = tuplevec
-        .into_iter()
-        .map(|x| (x.0, gen_graph(x.1)))
-        .collect();
-    Ok(res)
-}
-
 #[cfg(not(feature = "with-gpl-data"))]
 /// Parse multiple ruleset magic files and aggregate the tuples into a single graph
 pub fn from_multiple<'a>(

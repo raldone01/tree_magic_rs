@@ -20,6 +20,7 @@ petgraph = "0.6.0"
 nom = "7.0"
 fnv = "1.0"
 bytecount = "0.6.0"
+thiserror = "1.0.36"
 
 [dev-dependencies]
 bencher = "0.1.0"
