@@ -13,7 +13,7 @@ readme = "README.md"
 keywords = ["mime", "filesystem", "media-types"]
 license = "MIT"
 exclude = ["tests/*", "benches/*/"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 petgraph = "0.6.0"
@@ -21,6 +21,7 @@ nom = "7.0"
 fnv = "1.0"
 bytecount = "0.6.0"
 thiserror = "1.0.36"
+derive_more = "0.99.17"
 
 [dev-dependencies]
 bencher = "0.1.0"

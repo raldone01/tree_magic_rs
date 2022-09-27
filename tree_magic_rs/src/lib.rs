@@ -3,6 +3,9 @@
 #![allow(clippy::doc_markdown)]
 #![feature(return_position_impl_trait_in_trait)]
 #![allow(incomplete_features)]
+#![feature(alloc_layout_extra)]
+#![feature(ptr_as_uninit)]
+#![feature(pointer_byte_offsets)]
 /*!
 TODO: COPY README
 */
@@ -10,7 +13,7 @@ TODO: COPY README
 mod basetype;
 mod fdo_magic;
 
-mod db_guts;
+pub mod db;
 
 mod tree_magic;
 pub use tree_magic::MimeDatabase;
