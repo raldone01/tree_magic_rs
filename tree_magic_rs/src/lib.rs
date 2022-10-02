@@ -6,6 +6,7 @@
 #![feature(alloc_layout_extra)]
 #![feature(ptr_as_uninit)]
 #![feature(pointer_byte_offsets)]
+#![deny(unsafe_op_in_unsafe_fn)]
 /*!
 TODO: COPY README
 */
